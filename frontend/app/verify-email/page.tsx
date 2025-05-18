@@ -43,6 +43,11 @@ export default function VerifyEmail() {
                         title: "Email verified successfully!",
                         description: data.message || "You can now sign in to your account.",
                     });
+
+                    // Automatically redirect to sign in page after a short delay
+                    setTimeout(() => {
+                        router.push("/auth/signin");
+                    }, 1500);
                 } else {
                     toast({
                         variant: "destructive",
@@ -62,7 +67,7 @@ export default function VerifyEmail() {
         };
 
         verifyEmail();
-    }, [ searchParams, toast ]);
+    }, [ searchParams, toast, router ]);
 
     return (
         <AuthLayout
@@ -85,14 +90,9 @@ export default function VerifyEmail() {
                 ) : isVerified ? (
                     <div className="flex flex-col items-center space-y-4">
                         <p className="text-center text-sm text-muted-foreground">
-                            Your email has been verified successfully! You can now log in.
+                            Your email has been verified successfully! You will be redirected to sign in.
                         </p>
-                        <Button
-                            className="w-full"
-                            onClick={() => router.push("/auth/signin")}
-                        >
-                            Sign In
-                        </Button>
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
                     </div>
                 ) : (
                     <div className="flex flex-col items-center space-y-4">

@@ -1,6 +1,7 @@
 import {validationResult} from "express-validator";
 import jwt from "jsonwebtoken";
 import {v4 as uuidv4} from "uuid";
+import {Sequelize} from "sequelize";
 
 import User from "../models/user.model.js";
 import Token from "../models/token.model.js";
@@ -74,7 +75,9 @@ export const verifyEmail = async (req, res, next) => {
     const user = await User.findOne({
       where: {
         verificationToken: token,
-        verificationExpires: {$gt: new Date()},
+        verificationExpires: {
+          [Sequelize.Op.gt]: new Date(),
+        },
       },
     });
 
@@ -206,7 +209,9 @@ export const refreshToken = async (req, res, next) => {
       where: {
         refreshToken,
         isRevoked: false,
-        expiresAt: {$gt: new Date()},
+        expiresAt: {
+          [Sequelize.Op.gt]: new Date(),
+        },
       },
     });
 
@@ -369,7 +374,9 @@ export const resetPassword = async (req, res, next) => {
     const user = await User.findOne({
       where: {
         resetPasswordToken: token,
-        resetPasswordExpires: {$gt: new Date()},
+        resetPasswordExpires: {
+          [Sequelize.Op.gt]: new Date(),
+        },
       },
     });
 

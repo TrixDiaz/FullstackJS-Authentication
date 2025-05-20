@@ -1,30 +1,27 @@
-import {Sequelize} from "sequelize";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const {DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, NODE_ENV} = process.env;
+// Use environment variable or fallback to a local MongoDB URI
+const MONGO_URI =
+  process.env.MONGO_URI || "mongodb://localhost:27017/fullstack_auth_db";
+const NODE_ENV = process.env.NODE_ENV || "development";
 
-const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
-  host: DB_HOST,
-  port: DB_PORT,
-  dialect: "postgres",
-  logging: NODE_ENV === "development" ? console.log : false,
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
-  dialectOptions: {
-    ssl:
-      NODE_ENV === "production"
-        ? {
-            require: true,
-            rejectUnauthorized: false,
-          }
-        : false,
-  },
-});
+const connectDB = async () => {
+  try {
+    console.log("Connecting to MongoDB...");
+    const conn = await mongoose.connect(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-export default sequelize;
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    return conn;
+  } catch (error) {
+    console.error(`MongoDB Connection Error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+export default connectDB;

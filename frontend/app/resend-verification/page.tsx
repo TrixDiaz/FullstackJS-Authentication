@@ -56,29 +56,31 @@ export default function ResendVerification() {
             const result = await resendVerification(values.email);
 
             if (result.success) {
-                setIsSuccess(true);
-                toast({
-                    title: "Verification email sent!",
-                    description: "Please check your inbox for the verification link.",
-                });
-            } else if (result.message?.includes("already verified")) {
-                toast({
-                    title: "Already verified",
-                    description: "This email is already verified. You can sign in now.",
-                    action: (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => router.push("/auth/signin")}
-                        >
-                            Sign In
-                        </Button>
-                    ),
-                });
-                // Redirect to sign in after a short delay
-                setTimeout(() => {
-                    router.push("/auth/signin");
-                }, 2000);
+                if (result.isVerified) {
+                    toast({
+                        title: "Already verified",
+                        description: "This email is already verified. You can sign in now.",
+                        action: (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => router.push("/auth/signin")}
+                            >
+                                Sign In
+                            </Button>
+                        ),
+                    });
+                    // Redirect to sign in after a short delay
+                    setTimeout(() => {
+                        router.push("/auth/signin");
+                    }, 2000);
+                } else {
+                    setIsSuccess(true);
+                    toast({
+                        title: "Verification email sent!",
+                        description: "Please check your inbox for the verification link.",
+                    });
+                }
             } else {
                 toast({
                     variant: "destructive",

@@ -1,7 +1,6 @@
 import {validationResult} from "express-validator";
 import jwt from "jsonwebtoken";
 import {v4 as uuidv4} from "uuid";
-import {Sequelize} from "sequelize";
 
 import User from "../models/user.model.js";
 import Token from "../models/token.model.js";
@@ -20,7 +19,7 @@ export const register = async (req, res, next) => {
     const {firstName, lastName, email, password} = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({where: {email}});
+    const existingUser = await User.findOne({email});
     if (existingUser) {
       return next(createError(400, "User with this email already exists"));
     }
@@ -73,12 +72,8 @@ export const verifyEmail = async (req, res, next) => {
 
     // Find user with verification token
     const user = await User.findOne({
-      where: {
-        verificationToken: token,
-        verificationExpires: {
-          [Sequelize.Op.gt]: new Date(),
-        },
-      },
+      verificationToken: token,
+      verificationExpires: {$gt: new Date()},
     });
 
     if (!user) {
@@ -87,8 +82,8 @@ export const verifyEmail = async (req, res, next) => {
 
     // Update user
     user.isVerified = true;
-    user.verificationToken = null;
-    user.verificationExpires = null;
+    user.verificationToken = undefined;
+    user.verificationExpires = undefined;
     await user.save();
 
     res
@@ -111,7 +106,7 @@ export const login = async (req, res, next) => {
     const {email, password} = req.body;
 
     // Find user
-    const user = await User.findOne({where: {email}});
+    const user = await User.findOne({email});
     if (!user) {
       return next(createError(401, "Invalid email or password"));
     }
@@ -135,7 +130,7 @@ export const login = async (req, res, next) => {
 
     // Save refresh token to database
     await Token.create({
-      userId: user.id,
+      userId: user._id,
       refreshToken,
       userAgent: req.headers["user-agent"],
       ip: req.ip,
@@ -171,7 +166,7 @@ export const logout = async (req, res, next) => {
 
     if (refreshToken) {
       // Find and revoke token
-      const token = await Token.findOne({where: {refreshToken}});
+      const token = await Token.findOne({refreshToken});
       if (token) {
         token.isRevoked = true;
         await token.save();
@@ -199,30 +194,26 @@ export const refreshToken = async (req, res, next) => {
     // Verify refresh token
     let decoded;
     try {
-      decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const JWT_REFRESH_SECRET =
+        process.env.JWT_REFRESH_SECRET || "your_jwt_refresh_secret_456";
+      decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
     } catch (error) {
       return next(createError(401, "Invalid refresh token"));
     }
 
-    // Check if token exists and is not revoked
+    // Check if token is in database and not revoked
     const token = await Token.findOne({
-      where: {
-        refreshToken,
-        isRevoked: false,
-        expiresAt: {
-          [Sequelize.Op.gt]: new Date(),
-        },
-      },
+      refreshToken,
+      isRevoked: false,
+      expiresAt: {$gt: new Date()},
     });
 
     if (!token) {
-      return next(
-        createError(401, "Refresh token has been revoked or expired")
-      );
+      return next(createError(401, "Invalid refresh token"));
     }
 
     // Get user
-    const user = await User.findByPk(decoded.id);
+    const user = await User.findById(decoded.id);
     if (!user) {
       return next(createError(401, "User not found"));
     }
@@ -232,6 +223,7 @@ export const refreshToken = async (req, res, next) => {
 
     res.status(200).json({
       accessToken,
+      user: user.toJSON(),
     });
   } catch (error) {
     next(error);
@@ -250,18 +242,18 @@ export const forgotPassword = async (req, res, next) => {
     const {email} = req.body;
 
     // Find user
-    const user = await User.findOne({where: {email}});
+    const user = await User.findOne({email});
     if (!user) {
-      // For security reasons, don't reveal that email doesn't exist
+      // Don't reveal that email doesn't exist for security reasons
       return res.status(200).json({
         message:
-          "If your email is in our system, you will receive a password reset link",
+          "If your email is registered, you will receive a password reset link.",
       });
     }
 
     // Generate reset token
     const resetToken = uuidv4();
-    const resetExpires = new Date(Date.now() + 1 * 60 * 60 * 1000); // 1 hour
+    const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     // Update user
     user.resetPasswordToken = resetToken;
@@ -273,29 +265,29 @@ export const forgotPassword = async (req, res, next) => {
     await sendEmail({
       to: email,
       subject: "Reset Your Password",
-      text: `You are receiving this because you (or someone else) requested a password reset. Please click on the following link to reset your password: ${resetUrl}`,
+      text: `You requested a password reset. Please click on the following link to reset your password: ${resetUrl}`,
       html: `
         <h1>Password Reset</h1>
         <p>Hi ${user.firstName},</p>
-        <p>You are receiving this because you (or someone else) requested a password reset. Please click the button below to reset your password:</p>
+        <p>You requested a password reset. Please click the button below to reset your password:</p>
         <a href="${resetUrl}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
         <p>If the button doesn't work, please copy and paste this URL into your browser:</p>
         <p>${resetUrl}</p>
         <p>This link will expire in 1 hour.</p>
-        <p>If you didn't request this, please ignore this email and your password will remain unchanged.</p>
+        <p>If you didn't request a password reset, please ignore this email.</p>
       `,
     });
 
     res.status(200).json({
       message:
-        "If your email is in our system, you will receive a password reset link",
+        "If your email is registered, you will receive a password reset link.",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// Resend email verification
+// Resend verification email
 export const resendVerification = async (req, res, next) => {
   try {
     // Check validation results
@@ -307,20 +299,19 @@ export const resendVerification = async (req, res, next) => {
     const {email} = req.body;
 
     // Find user
-    const user = await User.findOne({where: {email}});
-
+    const user = await User.findOne({email});
     if (!user) {
-      // For security reasons, don't reveal that email doesn't exist
+      // Don't reveal that email doesn't exist for security reasons
       return res.status(200).json({
         message:
-          "If your email is in our system, you will receive a verification link",
+          "If your email is registered and not verified, you will receive a verification email.",
       });
     }
 
-    // Check if already verified
+    // Check if user is already verified
     if (user.isVerified) {
       return res.status(400).json({
-        message: "This email is already verified",
+        message: "Email is already verified. Please login.",
       });
     }
 
@@ -328,7 +319,7 @@ export const resendVerification = async (req, res, next) => {
     const verificationToken = uuidv4();
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Update user with new verification token
+    // Update user
     user.verificationToken = verificationToken;
     user.verificationExpires = verificationExpires;
     await user.save();
@@ -342,7 +333,7 @@ export const resendVerification = async (req, res, next) => {
       html: `
         <h1>Email Verification</h1>
         <p>Hi ${user.firstName},</p>
-        <p>Thank you for registering. Please verify your email by clicking the button below:</p>
+        <p>Please verify your email by clicking the button below:</p>
         <a href="${verificationUrl}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
         <p>If the button doesn't work, please copy and paste this URL into your browser:</p>
         <p>${verificationUrl}</p>
@@ -351,7 +342,8 @@ export const resendVerification = async (req, res, next) => {
     });
 
     res.status(200).json({
-      message: "Verification email sent. Please check your inbox.",
+      message:
+        "If your email is registered and not verified, you will receive a verification email.",
     });
   } catch (error) {
     next(error);
@@ -367,77 +359,69 @@ export const resetPassword = async (req, res, next) => {
       return res.status(400).json({errors: errors.array()});
     }
 
-    const {token} = req.params;
+    const token = req.params.token;
     const {password} = req.body;
 
     // Find user with reset token
     const user = await User.findOne({
-      where: {
-        resetPasswordToken: token,
-        resetPasswordExpires: {
-          [Sequelize.Op.gt]: new Date(),
-        },
-      },
+      resetPasswordToken: token,
+      resetPasswordExpires: {$gt: new Date()},
     });
 
     if (!user) {
       return next(createError(400, "Invalid or expired reset token"));
     }
 
-    // Update user password
+    // Update user
     user.password = password;
-    user.resetPasswordToken = null;
-    user.resetPasswordExpires = null;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
     await user.save();
-
-    // Revoke all refresh tokens for this user
-    await Token.update({isRevoked: true}, {where: {userId: user.id}});
-
-    // Send confirmation email
-    await sendEmail({
-      to: user.email,
-      subject: "Your Password Has Been Changed",
-      text: "This is a confirmation that the password for your account has just been changed.",
-      html: `
-        <h1>Password Changed</h1>
-        <p>Hi ${user.firstName},</p>
-        <p>This is a confirmation that the password for your account has just been changed.</p>
-        <p>If you did not make this change, please contact us immediately.</p>
-      `,
-    });
 
     res.status(200).json({
       message:
-        "Password reset successful. You can now log in with your new password.",
+        "Password reset successfully. You can now log in with your new password.",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// Helper functions
+// Generate access token
 const generateAccessToken = (user) => {
-  return jwt.sign(
-    {id: user.id, email: user.email, role: user.role},
-    process.env.JWT_SECRET,
-    {expiresIn: process.env.JWT_EXPIRES_IN || "1h"}
-  );
-};
+  const JWT_ACCESS_SECRET =
+    process.env.JWT_ACCESS_SECRET || "your_jwt_access_secret_123";
+  const JWT_ACCESS_EXPIRE = process.env.JWT_ACCESS_EXPIRE || "15m";
 
-const generateRefreshToken = (user) => {
-  return jwt.sign({id: user.id}, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+  return jwt.sign({id: user._id, role: user.role}, JWT_ACCESS_SECRET, {
+    expiresIn: JWT_ACCESS_EXPIRE,
   });
 };
 
-// Check auth status
+// Generate refresh token
+const generateRefreshToken = (user) => {
+  const JWT_REFRESH_SECRET =
+    process.env.JWT_REFRESH_SECRET || "your_jwt_refresh_secret_456";
+  const JWT_REFRESH_EXPIRE = process.env.JWT_REFRESH_EXPIRE || "7d";
+
+  return jwt.sign({id: user._id}, JWT_REFRESH_SECRET, {
+    expiresIn: JWT_REFRESH_EXPIRE,
+  });
+};
+
+// Check authentication status
 export const authStatus = async (req, res, next) => {
   try {
-    // This route will use the authenticate middleware before this controller
-    // If we get here, the user is authenticated
-    return res.status(200).json({
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(createError(404, "User not found"));
+    }
+
+    res.status(200).json({
       isAuthenticated: true,
-      user: req.user,
+      user: user.toJSON(),
     });
   } catch (error) {
     next(error);

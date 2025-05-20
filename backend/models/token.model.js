@@ -1,47 +1,36 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
-import User from './user.model.js';
+import mongoose from "mongoose";
 
-const Token = sequelize.define('Token', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+const tokenSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    refreshToken: {
+      type: String,
+      required: true,
+    },
+    userAgent: {
+      type: String,
+    },
+    ip: {
+      type: String,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+    },
+    isRevoked: {
+      type: Boolean,
+      default: false,
+    },
   },
-  userId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: User,
-      key: 'id'
-    }
-  },
-  refreshToken: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  userAgent: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  ip: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  expiresAt: {
-    type: DataTypes.DATE,
-    allowNull: false
-  },
-  isRevoked: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true
-});
+);
 
-// Association
-Token.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-User.hasMany(Token, { foreignKey: 'userId', as: 'tokens' });
+const Token = mongoose.model("Token", tokenSchema);
 
 export default Token;

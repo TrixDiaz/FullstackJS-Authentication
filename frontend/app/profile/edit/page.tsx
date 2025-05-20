@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateProfile, getCurrentUser } from "@/lib/auth-service";
 import { profileSchema, type ProfileFormValues } from "@/lib/auth-validation";
 import { useToast } from "@/hooks/use-toast";
@@ -107,33 +106,12 @@ export default function EditProfile() {
             <CardHeader>
               <CardTitle>Profile Information</CardTitle>
               <CardDescription>
-                Update your personal information and how others see you on the platform
+                Update your personal information
               </CardDescription>
             </CardHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <CardContent className="space-y-6">
-                  <div className="flex flex-col items-center sm:flex-row sm:items-start gap-6">
-                    <Avatar className="h-24 w-24">
-                      <AvatarImage src={user?.avatar} alt={user ? `${user.firstName} ${user.lastName}` : ""} />
-                      <AvatarFallback className="text-3xl">{user?.firstName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="mt-4 sm:mt-0">
-                      <h3 className="font-medium">Profile Photo</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        This will be displayed on your profile and in comments
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        <Button size="sm" variant="outline" type="button">
-                          Upload New Photo
-                        </Button>
-                        <Button size="sm" variant="outline" type="button">
-                          Remove Photo
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="grid gap-6 sm:grid-cols-2">
                     <FormField
                       control={form.control}
@@ -228,7 +206,7 @@ export default function EditProfile() {
                         <FormControl>
                           <Textarea
                             placeholder="Tell us a little about yourself"
-                            className="min-h-[100px]"
+                            className="min-h-32"
                             {...field}
                           />
                         </FormControl>

@@ -20,6 +20,13 @@ export interface User {
   bio?: string;
   phoneNumber?: string;
   avatar?: string;
+  // Additional fields from backend model
+  role?: string;
+  isVerified?: boolean;
+  profileImage?: string;
+  lastLogin?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Simulate API delay
@@ -128,7 +135,7 @@ export async function forgotPassword(values: ForgotPasswordFormValues): Promise<
   }
 }
 
-export async function resendVerification(email: string): Promise<{ success: boolean; message?: string }> {
+export async function resendVerification(email: string): Promise<{ success: boolean; message?: string; isVerified?: boolean }> {
   try {
     const response = await fetch('http://localhost:5000/api/auth/resend-verification', {
       method: 'POST',
@@ -141,6 +148,15 @@ export async function resendVerification(email: string): Promise<{ success: bool
     const data = await response.json();
 
     if (!response.ok) {
+      // Check specifically for the 'already verified' message
+      if (response.status === 400 && data.message?.includes('already verified')) {
+        return {
+          success: true,
+          isVerified: true,
+          message: data.message || 'This email is already verified. Please sign in.'
+        };
+      }
+
       return {
         success: false,
         message: data.message || 'Failed to resend verification email.'
@@ -150,6 +166,36 @@ export async function resendVerification(email: string): Promise<{ success: bool
     return {
       success: true,
       message: data.message || 'Verification email sent. Please check your inbox.'
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: 'An error occurred while connecting to the server.'
+    };
+  }
+}
+
+export async function verifyEmail(token: string): Promise<{ success: boolean; message?: string }> {
+  try {
+    const response = await fetch(`http://localhost:5000/api/auth/verify-email/${token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: data.message || 'Failed to verify email.',
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || 'Your email has been verified successfully. You can now sign in.'
     };
   } catch (error) {
     return {

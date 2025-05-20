@@ -78,7 +78,7 @@ export default function SignIn() {
     setIsLoading(true);
     try {
       // Redirect to resend verification page/endpoint with the email
-      router.push(`/auth/resend-verification?email=${encodeURIComponent(userEmail)}`);
+      router.push(`/resend-verification?email=${encodeURIComponent(userEmail)}`);
     } catch (error) {
       toast({
         variant: "destructive",

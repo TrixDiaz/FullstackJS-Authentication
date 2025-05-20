@@ -1,127 +1,133 @@
-# Node.js Express PostgreSQL Authentication Backend
+# Node.js Authentication Backend with MongoDB
 
-A comprehensive authentication backend built with Node.js, Express, and PostgreSQL, featuring secure user management and authentication workflows.
+This is a Node.js backend for a full-stack authentication system using Express, MongoDB, and JWT.
 
 ## Features
 
-- **User Authentication**
-  - Registration with email verification
-  - Login with JWT authentication
-  - Password reset functionality
-  - Access and refresh tokens
-  - Session management
+- User registration with email verification
+- User login with JWT authentication
+- Refresh tokens
+- Password reset functionality
+- User profile management
+- Role-based authorization
+- Rate limiting
+- Security headers
 
-- **User Management**
-  - Profile viewing and editing
-  - Password changing
-  - Profile image setting
-  - Account deletion
+## Technologies
 
-- **Security**
-  - Password hashing with bcrypt
-  - Input validation
-  - Rate limiting
-  - HTTPS headers with Helmet
-  - CORS protection
-  - HTTP-only cookies for refresh tokens
+- Node.js & Express
+- MongoDB with Mongoose
+- JWT for authentication
+- Bcrypt for password hashing
+- Nodemailer for emails
+- Express Validator for validations
+- Helmet for security headers
+- Morgan for logging
+- CORS for cross-origin requests
 
-## Prerequisites
+## Getting Started
 
-- Node.js (v14+)
-- PostgreSQL
+### Prerequisites
 
-## Installation
+- Node.js (v14 or higher)
+- MongoDB (local or Atlas)
+- npm or pnpm
+
+### Installation
 
 1. Clone the repository
-2. Install dependencies
-   ```
-   npm install
-   ```
-3. Create a `.env` file based on `.env.example`
-4. Set up PostgreSQL database and update the connection details in `.env`
+2. Install dependencies:
 
-## Running the Application
-
-Development mode:
+```bash
+cd backend
+npm install
+# or with pnpm
+pnpm install
 ```
+
+3. Create a `.env` file in the backend directory based on `.env.example`
+
+```
+# Server
+PORT=5000
+NODE_ENV=development
+
+# Frontend URL (for CORS and email links)
+FRONTEND_URL=http://localhost:3000
+
+# MongoDB
+MONGO_URI=mongodb://localhost:27017/fullstack_auth_db
+
+# JWT
+JWT_ACCESS_SECRET=your_jwt_access_secret
+JWT_ACCESS_EXPIRE=15m
+JWT_REFRESH_SECRET=your_jwt_refresh_secret
+JWT_REFRESH_EXPIRE=7d
+
+# Email
+EMAIL_SERVICE=gmail
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-email-app-password
+```
+
+4. Start the development server:
+
+```bash
 npm run dev
-```
-
-Production mode:
-```
-npm start
+# or with pnpm
+pnpm dev
 ```
 
 ## API Endpoints
 
 ### Authentication
 
-- **POST /api/auth/register** - Register a new user
-- **GET /api/auth/verify-email/:token** - Verify email address
-- **POST /api/auth/login** - Login user
-- **POST /api/auth/logout** - Logout user
-- **POST /api/auth/refresh-token** - Refresh access token
-- **POST /api/auth/forgot-password** - Initiate password reset
-- **POST /api/auth/reset-password/:token** - Reset password
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/logout` - Logout user
+- `POST /api/auth/refresh-token` - Refresh access token
+- `GET /api/auth/verify-email/:token` - Verify email
+- `POST /api/auth/resend-verification` - Resend verification email
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password
+- `GET /api/auth/status` - Check authentication status
 
 ### User Management
 
-- **GET /api/users/me** - Get current user profile
-- **PUT /api/users/profile** - Update user profile
-- **PUT /api/users/change-password** - Change password
-- **PUT /api/users/profile-image** - Update profile image
-- **DELETE /api/users/account** - Delete user account
+- `GET /api/users/me` - Get current user
+- `PATCH /api/users/me` - Update profile
+- `PATCH /api/users/me/password` - Change password
+- `PATCH /api/users/me/profile-image` - Update profile image
+- `DELETE /api/users/me` - Delete account
+
+## Development
+
+### ESLint
+
+This project uses ESLint for code linting. Run:
+
+```bash
+npm run lint
+# or with pnpm
+pnpm lint
+```
 
 ## Environment Variables
 
-```
-# Server Configuration
-PORT=5000
-NODE_ENV=development
+The following environment variables are required:
 
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=auth_db
-DB_USER=postgres
-DB_PASSWORD=postgres
+- `PORT` - Port for the server (default: 5000)
+- `NODE_ENV` - Environment (development, production)
+- `FRONTEND_URL` - Frontend URL for CORS and email links
+- `MONGO_URI` - MongoDB connection string
+- `JWT_ACCESS_SECRET` - Secret for JWT access tokens
+- `JWT_ACCESS_EXPIRE` - Expiration for access tokens (default: 15m)
+- `JWT_REFRESH_SECRET` - Secret for JWT refresh tokens
+- `JWT_REFRESH_EXPIRE` - Expiration for refresh tokens (default: 7d)
+- `EMAIL_SERVICE` - Email service (e.g., gmail)
+- `EMAIL_USER` - Email username/address
+- `EMAIL_PASS` - Email password
 
-# JWT Configuration
-JWT_SECRET=your_jwt_secret_key
-JWT_REFRESH_SECRET=your_jwt_refresh_secret_key
-JWT_EXPIRES_IN=1h
-JWT_REFRESH_EXPIRES_IN=7d
+## License
 
-# Email Configuration
-EMAIL_HOST=smtp.example.com
-EMAIL_PORT=587
-EMAIL_USER=your_email@example.com
-EMAIL_PASS=your_email_password
-EMAIL_FROM=your_email@example.com
-
-# Frontend URL
-FRONTEND_URL=http://localhost:3000
-```
-
-## Project Structure
-
-```
-server/
-├── config/         # Configuration files
-├── controllers/    # Route controllers
-├── middleware/     # Custom middleware
-├── models/         # Database models
-├── routes/         # API routes
-├── utils/          # Utility functions
-└── index.js        # Entry point
-```
-
-## Security Best Practices
-
-- Passwords are hashed using bcrypt
-- JWT tokens with limited lifetime
-- HTTP-only cookies for refresh tokens
-- Input validation for all endpoints
-- Rate limiting to prevent brute force attacks
-- Secure HTTP headers with Helmet
-- CORS protection
+This project is licensed under the MIT License.

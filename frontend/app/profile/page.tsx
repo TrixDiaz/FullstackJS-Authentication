@@ -26,6 +26,7 @@ export default function Profile() {
         const userData = await getCurrentUser();
         if (userData) {
           setUser(userData);
+          console.log("User data:", userData); // Log to see all available fields
         } else {
           // Show toast and redirect to login if no authenticated user
           toast({
@@ -66,11 +67,25 @@ export default function Profile() {
     return null;
   }
 
+  // Format date for display
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "Not available";
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   const userInfoItems = [
     { label: "Email", value: user.email },
     { label: "Job Title", value: user.jobTitle || "Not specified" },
     { label: "Company", value: user.company || "Not specified" },
     { label: "Phone", value: user.phoneNumber || "Not specified" },
+    { label: "Role", value: user.role || "user" },
+    { label: "Verification Status", value: user.isVerified ? "Verified" : "Not Verified" },
+    { label: "Created At", value: user.createdAt ? formatDate(user.createdAt) : "Not available" },
+    { label: "Updated At", value: user.updatedAt ? formatDate(user.updatedAt) : "Not available" },
   ];
 
   return (
@@ -108,9 +123,15 @@ export default function Profile() {
                 <div className="flex flex-col md:flex-row gap-8">
                   <div className="flex flex-col items-center gap-4">
                     <Avatar className="h-32 w-32">
-                      <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} />
+                      <AvatarImage src={user.avatar || user.profileImage} alt={`${user.firstName} ${user.lastName}`} />
                       <AvatarFallback className="text-4xl">{user.firstName.charAt(0)}</AvatarFallback>
                     </Avatar>
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold">{`${user.firstName} ${user.lastName}`}</h3>
+                      {user.role && (
+                        <span className="text-sm text-muted-foreground">{user.role}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex-1 space-y-4">
                     <div>
@@ -139,7 +160,7 @@ export default function Profile() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
           >
             <Card>
               <CardHeader className="pb-4">

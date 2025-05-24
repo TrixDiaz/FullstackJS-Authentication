@@ -3,15 +3,14 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
-import { motion } from "framer-motion";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> { }
 
 const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => {
-    const [showPassword, setShowPassword] = React.useState(false);
-    
+    const [ showPassword, setShowPassword ] = React.useState(false);
+
     return (
       <div className="relative">
         <input
@@ -28,17 +27,13 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
           onClick={() => setShowPassword(!showPassword)}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
         >
-          <motion.div
-            initial={false}
-            animate={{ rotate: showPassword ? 0 : 180 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div className={`transition-transform duration-300 ${showPassword ? 'rotate-0' : 'rotate-180'}`}>
             {showPassword ? (
               <EyeOff className="h-4 w-4" />
             ) : (
               <Eye className="h-4 w-4" />
             )}
-          </motion.div>
+          </div>
           <span className="sr-only">
             {showPassword ? "Hide password" : "Show password"}
           </span>

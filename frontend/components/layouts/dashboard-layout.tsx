@@ -3,7 +3,6 @@
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { Settings, User, LogOut, Menu, X, ArrowLeft, Fingerprint } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -174,29 +173,23 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Link>
             </div>
           </div>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="container py-6 px-4 md:py-8 md:px-6"
-            >
-              {pathname !== "/profile" && pathname !== "/dashboard" && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mb-6"
-                  onClick={() => router.back()}
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back
-                </Button>
-              )}
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <div
+            key={pathname}
+            className="container py-6 px-4 md:py-8 md:px-6 animate-fade-in-up"
+          >
+            {pathname !== "/profile" && pathname !== "/dashboard" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mb-6"
+                onClick={() => router.back()}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
+            )}
+            {children}
+          </div>
         </main>
       </div>
     </div>

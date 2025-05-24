@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { ArrowRight, Shield, User, Lock } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
-  
+
   const features = [
     {
       icon: <User className="h-10 w-10 text-primary" />,
@@ -32,22 +31,17 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-xl font-semibold"
-          >
+          <div className="text-xl font-semibold animate-fade-in">
             Enterprise Auth
-          </motion.div>
+          </div>
           <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => router.push("/auth/signin")}
             >
               Sign In
             </Button>
-            <Button 
+            <Button
               onClick={() => router.push("/auth/signup")}
             >
               Sign Up
@@ -60,12 +54,7 @@ export default function Home() {
       <main className="flex-1">
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-6xl">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-16"
-            >
+            <div className="text-center mb-16 animate-fade-in-up">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
                 Enterprise-Grade Authentication
               </h1>
@@ -73,34 +62,30 @@ export default function Home() {
                 Secure, scalable, and seamless authentication system with comprehensive profile management
               </p>
               <div className="mt-10">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="px-8 py-6 text-lg"
                   onClick={() => router.push("/auth/signup")}
                 >
                   Get Started <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
-            </motion.div>
+            </div>
 
             <div className="grid md:grid-cols-3 gap-8 mt-20">
-              <AnimatePresence>
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
-                    className="bg-card border rounded-lg p-6 text-center"
-                  >
-                    <div className="mx-auto mb-4 bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-medium mb-2">{feature.title}</h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="bg-card border rounded-lg p-6 text-center animate-fade-in-up"
+                  style={{ animationDelay: `${index * 100 + 300}ms` }}
+                >
+                  <div className="mx-auto mb-4 bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-medium mb-2">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>

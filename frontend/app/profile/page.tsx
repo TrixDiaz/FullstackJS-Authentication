@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -107,11 +106,7 @@ export default function Profile() {
         </div>
 
         <div className="grid gap-8">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div className="animate-fade-in-up">
             <Card>
               <CardHeader className="pb-4">
                 <CardTitle>Personal Information</CardTitle>
@@ -155,13 +150,9 @@ export default function Profile() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-          >
+          <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
             <Card>
               <CardHeader className="pb-4">
                 <CardTitle>Account Security</CardTitle>
@@ -197,7 +188,7 @@ export default function Profile() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         </div>
       </div>
     </DashboardLayout>

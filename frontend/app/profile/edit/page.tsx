@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
@@ -97,11 +96,7 @@ export default function EditProfile() {
           </p>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
+        <div className="animate-fade-in-up">
           <Card>
             <CardHeader>
               <CardTitle>Profile Information</CardTitle>
@@ -237,7 +232,7 @@ export default function EditProfile() {
               </form>
             </Form>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </DashboardLayout>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
@@ -18,7 +17,7 @@ import { changePassword } from "@/lib/auth-service";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<ChangePasswordFormValues>({
@@ -82,11 +81,7 @@ export default function Settings() {
           </TabsList>
 
           <TabsContent value="password">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div className="animate-fade-in-up">
               <Card>
                 <CardHeader>
                   <CardTitle>Change Password</CardTitle>
@@ -162,15 +157,11 @@ export default function Settings() {
                   </form>
                 </Form>
               </Card>
-            </motion.div>
+            </div>
           </TabsContent>
 
           <TabsContent value="security">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div className="animate-fade-in-up">
               <Card>
                 <CardHeader>
                   <CardTitle>Two-Factor Authentication</CardTitle>
@@ -208,15 +199,11 @@ export default function Settings() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </TabsContent>
 
           <TabsContent value="notifications">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div className="animate-fade-in-up">
               <Card>
                 <CardHeader>
                   <CardTitle>Notification Preferences</CardTitle>
@@ -253,11 +240,8 @@ export default function Settings() {
                     <Switch />
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button>Save Preferences</Button>
-                </CardFooter>
               </Card>
-            </motion.div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2, CheckCircle } from "lucide-react";
@@ -16,9 +15,9 @@ import { resetPasswordSchema, type ResetPasswordFormValues } from "@/lib/auth-va
 import { resetPassword } from "@/lib/auth-service";
 
 export default function ResetPassword() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [ isLoading, setIsLoading ] = useState(false);
+  const [ isSuccess, setIsSuccess ] = useState(false);
+  const [ successMessage, setSuccessMessage ] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "mock-token"; // In a real app, we'd validate this token
@@ -60,11 +59,7 @@ export default function ResetPassword() {
       subtitle="Create a new password for your account"
     >
       {!isSuccess ? (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
+        <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -114,14 +109,9 @@ export default function ResetPassword() {
               </Button>
             </form>
           </Form>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
-          className="text-center"
-        >
+        <div className="text-center animate-fade-in">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
             <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
           </div>
@@ -135,7 +125,7 @@ export default function ResetPassword() {
           <Button asChild>
             <Link href="/auth/signin">Sign in now</Link>
           </Button>
-        </motion.div>
+        </div>
       )}
     </AuthLayout>
   );

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
@@ -95,11 +94,7 @@ export default function SignIn() {
       title="Welcome back"
       subtitle="Sign in to your account to continue"
     >
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
-      >
+      <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -163,12 +158,7 @@ export default function SignIn() {
               )}
             />
             {needsVerification && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                transition={{ duration: 0.3 }}
-                className="pt-2"
-              >
+              <div className="pt-2 animate-fade-in">
                 <Button
                   type="button"
                   variant="outline"
@@ -185,7 +175,7 @@ export default function SignIn() {
                     "Resend Verification Email"
                   )}
                 </Button>
-              </motion.div>
+              </div>
             )}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
@@ -199,13 +189,8 @@ export default function SignIn() {
             </Button>
           </form>
         </Form>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.4 }}
-        className="mt-4 text-center text-sm"
-      >
+      </div>
+      <div className="mt-4 text-center text-sm animate-fade-in" style={{ animationDelay: '400ms' }}>
         Don&apos;t have an account?{" "}
         <Link
           href="/auth/signup"
@@ -213,7 +198,7 @@ export default function SignIn() {
         >
           Sign up
         </Link>
-      </motion.div>
+      </div>
     </AuthLayout>
   );
 }

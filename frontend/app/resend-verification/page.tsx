@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { AuthLayout } from "@/components/layouts/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -104,12 +103,7 @@ export default function ResendVerification() {
             title="Resend Verification Email"
             subtitle="Enter your email to receive a new verification link"
         >
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col space-y-4 w-full"
-            >
+            <div className="flex flex-col space-y-4 w-full animate-fade-in-up">
                 {isSuccess ? (
                     <div className="flex flex-col items-center space-y-4">
                         <p className="text-center text-sm text-muted-foreground">
@@ -169,7 +163,7 @@ export default function ResendVerification() {
                         </form>
                     </Form>
                 )}
-            </motion.div>
+            </div>
         </AuthLayout>
     );
 }

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface PasswordStrengthProps {
@@ -69,13 +68,7 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
   if (!password) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.3 }}
-      className="mt-2"
-    >
+    <div className="mt-2">
       <div className="flex justify-between items-center mb-1 text-xs">
         <span>Password strength</span>
         <span className={
@@ -96,6 +89,6 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
           "bg-secondary [&>div]:bg-emerald-500": strength > 80,
         })}
       />
-    </motion.div>
+    </div>
   );
 }

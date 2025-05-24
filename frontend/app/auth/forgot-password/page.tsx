@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2, ArrowLeft, CheckCircle } from "lucide-react";
@@ -14,9 +13,9 @@ import { forgotPasswordSchema, type ForgotPasswordFormValues } from "@/lib/auth-
 import { forgotPassword } from "@/lib/auth-service";
 
 export default function ForgotPassword() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [ isLoading, setIsLoading ] = useState(false);
+  const [ isSuccess, setIsSuccess ] = useState(false);
+  const [ successMessage, setSuccessMessage ] = useState("");
 
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -49,11 +48,7 @@ export default function ForgotPassword() {
       subtitle="Enter your email to receive a password reset link"
     >
       {!isSuccess ? (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
+        <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -94,14 +89,9 @@ export default function ForgotPassword() {
               </Link>
             </Button>
           </div>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
-          className="text-center"
-        >
+        <div className="text-center animate-fade-in">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
             <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
           </div>
@@ -112,7 +102,7 @@ export default function ForgotPassword() {
           <Button asChild>
             <Link href="/auth/signin">Return to sign in</Link>
           </Button>
-        </motion.div>
+        </div>
       )}
     </AuthLayout>
   );

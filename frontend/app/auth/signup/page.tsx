@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
@@ -70,11 +69,7 @@ export default function SignUp() {
       title="Create an account"
       subtitle="Enter your information to get started"
     >
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
-      >
+      <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -209,13 +204,8 @@ export default function SignUp() {
             </Button>
           </form>
         </Form>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.4 }}
-        className="mt-4 text-center text-sm"
-      >
+      </div>
+      <div className="mt-4 text-center text-sm animate-fade-in" style={{ animationDelay: '400ms' }}>
         Already have an account?{" "}
         <Link
           href="/auth/signin"
@@ -223,7 +213,7 @@ export default function SignUp() {
         >
           Sign in
         </Link>
-      </motion.div>
+      </div>
     </AuthLayout>
   );
 }

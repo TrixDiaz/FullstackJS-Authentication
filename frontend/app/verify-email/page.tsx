@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { AuthLayout } from "@/components/layouts/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -74,12 +73,7 @@ export default function VerifyEmail() {
             title="Email Verification"
             subtitle="Verifying your email address..."
         >
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col items-center space-y-4"
-            >
+            <div className="flex flex-col items-center space-y-4 animate-fade-in-up">
                 {isLoading ? (
                     <div className="flex flex-col items-center space-y-4">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -124,7 +118,7 @@ export default function VerifyEmail() {
                         </div>
                     </div>
                 )}
-            </motion.div>
+            </div>
         </AuthLayout>
     );
 } 

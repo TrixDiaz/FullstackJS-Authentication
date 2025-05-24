@@ -8,8 +8,9 @@ import { Settings, User, LogOut, Menu, X, ArrowLeft, Fingerprint } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { signOut, getCurrentUser } from "@/lib/auth-service";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import type { User as UserType } from "@/lib/auth-service";
 
 interface DashboardLayoutProps {
@@ -72,6 +73,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[240px] sm:w-[300px]">
+                <VisuallyHidden>
+                  <SheetTitle>Navigation Menu</SheetTitle>
+                </VisuallyHidden>
                 <div className="py-4">
                   <div className="flex items-center gap-2 mb-6">
                     <Fingerprint className="h-6 w-6" />

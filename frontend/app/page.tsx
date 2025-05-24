@@ -1,13 +1,38 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, User, Lock } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth-service";
+import type { User as UserType } from "@/lib/auth-service";
+import { signOut } from "@/lib/auth-service";
 
 export default function Home() {
   const router = useRouter();
+  const [ user, setUser ] = useState<UserType | null>(null);
+  const [ isLoading, setIsLoading ] = useState(true);
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/auth/signin");
+  };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const userData = await getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   const features = [
     {
@@ -35,18 +60,40 @@ export default function Home() {
             Enterprise Auth
           </div>
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => router.push("/auth/signin")}
-            >
-              Sign In
-            </Button>
-            <Button
-              onClick={() => router.push("/auth/signup")}
-            >
-              Sign Up
-            </Button>
-            <ThemeToggle />
+            {!isLoading && (
+              <>
+                {user ? (
+                  <section className="space-x-2">
+                    <Button
+                      variant="ghost"
+                      onClick={() => router.push("/profile")}
+                    >
+                      Profile
+                    </Button>
+                    <Button
+                      onClick={handleSignOut}
+                    >
+                      Sign Out
+                    </Button>
+                  </section>
+                ) : (
+                  <>
+                    <Button
+                      variant="ghost"
+                      onClick={() => router.push("/auth/signin")}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      onClick={() => router.push("/auth/signup")}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+                <ThemeToggle />
+              </>
+            )}
           </div>
         </div>
       </header>

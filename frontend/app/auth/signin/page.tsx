@@ -46,7 +46,7 @@ export default function SignIn() {
         });
         // Add a small delay to ensure the cookie is set before redirecting
         setTimeout(() => {
-          router.push("/profile");
+          router.push("/");
         }, 1000);
       } else {
         // Check if the error is about email verification

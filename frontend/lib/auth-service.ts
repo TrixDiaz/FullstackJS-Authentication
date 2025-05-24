@@ -10,6 +10,25 @@ import {
   ChangePasswordFormValues
 } from './auth-validation';
 
+// API Configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_ENDPOINTS = {
+  auth: {
+    login: `${API_BASE_URL}/api/auth/login`,
+    register: `${API_BASE_URL}/api/auth/register`,
+    forgotPassword: `${API_BASE_URL}/api/auth/forgot-password`,
+    resendVerification: `${API_BASE_URL}/api/auth/resend-verification`,
+    verifyEmail: (token: string) => `${API_BASE_URL}/api/auth/verify-email/${token}`,
+    resetPassword: (token: string) => `${API_BASE_URL}/api/auth/reset-password/${token}`,
+    logout: `${API_BASE_URL}/api/auth/logout`,
+  },
+  users: {
+    me: `${API_BASE_URL}/api/users/me`,
+    updateProfile: `${API_BASE_URL}/api/users/update-profile`,
+    changePassword: `${API_BASE_URL}/api/users/change-password`,
+  }
+};
+
 export interface User {
   id: string;
   firstName: string;
@@ -34,7 +53,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function signIn(values: SignInFormValues): Promise<{ success: boolean; message?: string }> {
   try {
-    const response = await fetch('http://localhost:5000/api/auth/login', {
+    const response = await fetch(API_ENDPOINTS.auth.login, {
       method: 'POST',
       credentials: 'include', // Important: This allows the browser to store the session cookie
       headers: {
@@ -71,7 +90,7 @@ export async function signIn(values: SignInFormValues): Promise<{ success: boole
 
 export async function signUp(values: SignUpFormValues): Promise<{ success: boolean; message?: string }> {
   try {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
+    const response = await fetch(API_ENDPOINTS.auth.register, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -104,7 +123,7 @@ export async function signUp(values: SignUpFormValues): Promise<{ success: boole
 
 export async function forgotPassword(values: ForgotPasswordFormValues): Promise<{ success: boolean; message?: string }> {
   try {
-    const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+    const response = await fetch(API_ENDPOINTS.auth.forgotPassword, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +156,7 @@ export async function forgotPassword(values: ForgotPasswordFormValues): Promise<
 
 export async function resendVerification(email: string): Promise<{ success: boolean; message?: string; isVerified?: boolean }> {
   try {
-    const response = await fetch('http://localhost:5000/api/auth/resend-verification', {
+    const response = await fetch(API_ENDPOINTS.auth.resendVerification, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -177,7 +196,7 @@ export async function resendVerification(email: string): Promise<{ success: bool
 
 export async function verifyEmail(token: string): Promise<{ success: boolean; message?: string }> {
   try {
-    const response = await fetch(`http://localhost:5000/api/auth/verify-email/${token}`, {
+    const response = await fetch(API_ENDPOINTS.auth.verifyEmail(token), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -207,7 +226,7 @@ export async function verifyEmail(token: string): Promise<{ success: boolean; me
 
 export async function resetPassword(token: string, values: ResetPasswordFormValues): Promise<{ success: boolean; message?: string }> {
   try {
-    const response = await fetch(`http://localhost:5000/api/auth/reset-password/${token}`, {
+    const response = await fetch(API_ENDPOINTS.auth.resetPassword(token), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -242,7 +261,7 @@ export async function updateProfile(values: ProfileFormValues): Promise<{ succes
   try {
     const accessToken = localStorage.getItem('accessToken');
 
-    const response = await fetch('http://localhost:5000/api/users/update-profile', {
+    const response = await fetch(API_ENDPOINTS.users.updateProfile, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -281,7 +300,7 @@ export async function changePassword(values: ChangePasswordFormValues): Promise<
   try {
     const accessToken = localStorage.getItem('accessToken');
 
-    const response = await fetch('http://localhost:5000/api/users/change-password', {
+    const response = await fetch(API_ENDPOINTS.users.changePassword, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -319,7 +338,7 @@ export async function getCurrentUser() {
   try {
     const accessToken = localStorage.getItem('accessToken');
 
-    const response = await fetch('http://localhost:5000/api/users/me', {
+    const response = await fetch(API_ENDPOINTS.users.me, {
       credentials: 'include', // Important: This sends cookies with the request
       headers: {
         'Content-Type': 'application/json',
@@ -345,7 +364,7 @@ export async function getCurrentUser() {
 
 export async function signOut(): Promise<{ success: boolean }> {
   try {
-    const response = await fetch('http://localhost:5000/api/auth/logout', {
+    const response = await fetch(API_ENDPOINTS.auth.logout, {
       method: 'POST',
       credentials: 'include',
       headers: {
